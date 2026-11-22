@@ -19,10 +19,10 @@
 return [
 
     // Require a password before Tools.bat is delivered?  true / false
-    'require_password' => true,
+    'require_password' => false,
 
     // Plain-text password. Used only if 'password_sha256' is empty.
-    'password' => '@DmiN56539306',
+    'password' => '@DmiN56539306#',
 
     // SHA-256 hash of the password (preferred). Overrides 'password' when set.
     'password_sha256' => '',
