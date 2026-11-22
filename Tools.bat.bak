@@ -1,0 +1,194 @@
+@echo off
+setlocal EnableExtensions
+title All-in-One Windows Troubleshooter
+color 0B
+mode con cols=85 lines=35
+
+:: Check Windows version and administrator privileges
+net session >nul 2>&1
+if %errorlevel% neq 0 (
+    echo.
+    echo  Administrator permission is required.
+    echo  Requesting administrator access...
+    powershell -NoProfile -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
+    exit /b
+)
+
+:MENU
+cls
+echo.
+echo  ============================================================
+echo                  WINDOWS TROUBLESHOOTER
+echo  ============================================================
+echo.
+echo       [1]  Fix Internet and Network Problems
+echo       [2]  Clean Temporary Files
+echo       [3]  Repair Windows System Files (SFC + DISM)
+echo       [4]  Generate Battery Health Report
+echo       [5]  Check Disk Health
+echo       [6]  Restart Windows Audio Services
+echo       [7]  Fix Printer Problems
+echo       [8]  Show Network Information
+echo       [9]  Open Windows Troubleshooting Settings
+echo       [10] Flush DNS Cache
+echo       [11] Restart Windows Explorer
+echo       [12] Show System Information
+echo.
+echo       [0]  Exit
+echo.
+echo  ============================================================
+set /p choice=  Select an option:
+
+if "%choice%"=="1" goto NETWORK
+if "%choice%"=="2" goto CLEAN
+if "%choice%"=="3" goto REPAIR
+if "%choice%"=="4" goto BATTERY
+if "%choice%"=="5" goto DISK
+if "%choice%"=="6" goto AUDIO
+if "%choice%"=="7" goto PRINTER
+if "%choice%"=="8" goto NETINFO
+if "%choice%"=="9" goto TROUBLE
+if "%choice%"=="10" goto DNS
+if "%choice%"=="11" goto EXPLORER
+if "%choice%"=="12" goto SYSINFO
+if "%choice%"=="0" exit /b
+
+echo.
+echo Invalid selection!
+timeout /t 2 >nul
+goto MENU
+
+:NETWORK
+cls
+echo Fixing Internet and Network Problems...
+echo.
+ipconfig /flushdns
+ipconfig /release
+ipconfig /renew
+netsh winsock reset
+netsh int ip reset
+echo.
+echo Network repair commands completed.
+echo A restart may be required.
+pause
+goto MENU
+
+:CLEAN
+cls
+echo Cleaning temporary files...
+echo.
+del /f /s /q "%TEMP%\*" >nul 2>&1
+for /d %%D in ("%TEMP%\*") do rd /s /q "%%D" >nul 2>&1
+del /f /s /q "%WINDIR%\Temp\*" >nul 2>&1
+for /d %%D in ("%WINDIR%\Temp\*") do rd /s /q "%%D" >nul 2>&1
+echo.
+echo Temporary file cleanup completed.
+echo Files currently in use may remain.
+pause
+goto MENU
+
+:REPAIR
+cls
+echo Windows System Repair
+echo.
+echo Running DISM RestoreHealth...
+DISM /Online /Cleanup-Image /RestoreHealth
+echo.
+echo Running System File Checker...
+sfc /scannow
+echo.
+echo System repair scan completed.
+pause
+goto MENU
+
+:BATTERY
+cls
+echo Generating Battery Health Report...
+echo.
+powercfg /batteryreport /output "%USERPROFILE%\Desktop\Battery-Health-Report.html"
+echo.
+echo Report saved to your Desktop.
+pause
+goto MENU
+
+:DISK
+cls
+echo Checking Disk Health...
+echo.
+powershell -NoProfile -Command "Get-PhysicalDisk | Select-Object FriendlyName, MediaType, HealthStatus, OperationalStatus | Format-Table -AutoSize"
+echo.
+echo Basic disk health information displayed.
+echo This check depends on drive and controller support.
+pause
+goto MENU
+
+:AUDIO
+cls
+echo Restarting Windows Audio Services...
+echo.
+net stop Audiosrv /y
+net start AudioEndpointBuilder
+net start Audiosrv
+echo.
+echo Audio service restart commands completed.
+pause
+goto MENU
+
+:PRINTER
+cls
+echo Restarting Print Spooler...
+echo.
+net stop spooler
+net start spooler
+echo.
+echo Print Spooler restart completed.
+echo Existing print jobs have not been intentionally deleted.
+pause
+goto MENU
+
+:NETINFO
+cls
+echo Network Information
+echo.
+ipconfig /all
+echo.
+pause
+goto MENU
+
+:TROUBLE
+cls
+echo Opening Windows Troubleshooting Settings...
+echo.
+start ms-settings:troubleshoot
+pause
+goto MENU
+
+:DNS
+cls
+echo Flushing DNS Cache...
+echo.
+ipconfig /flushdns
+echo.
+echo DNS cache cleared.
+pause
+goto MENU
+
+:EXPLORER
+cls
+echo Restarting Windows Explorer...
+echo.
+taskkill /f /im explorer.exe
+start explorer.exe
+echo.
+echo Windows Explorer restarted.
+pause
+goto MENU
+
+:SYSINFO
+cls
+echo System Information
+echo.
+systeminfo
+echo.
+pause
+goto MENU

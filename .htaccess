@@ -1,0 +1,12 @@
+DirectoryIndex index.php
+Options -Indexes
+
+# Do not expose backups / logs
+<FilesMatch "\.(bak|log|md|txt)$">
+    Require all denied
+</FilesMatch>
+
+# Never serve the settings file directly
+<FilesMatch "^config\.php$">
+    Require all denied
+</FilesMatch>
