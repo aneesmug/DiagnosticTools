@@ -32,26 +32,41 @@ the PHP gate on your own server.
 
 ---
 
-## 2. Put Tools.bat on GitHub
+## 2. Put Tools.bat on GitHub   (repo: aneesmug/DiagnosticTools)
 
-1. Create a **public** repository, e.g. `it-tools`.
-   (Public is needed so the download needs no login. The password in the .bat is
-   the gate; the hash cannot be turned back into your password.)
-2. Upload **Tools.bat** to it (web UI: "Add file" -> "Upload files", or `git push`).
-3. Your raw URL is:
+> The repo MUST be **Public**. `raw.githubusercontent.com` cannot be downloaded
+> by `irm` from a private repo, so a private repo breaks this.
+> Make it public: repo -> Settings -> General -> Danger Zone -> "Change visibility" -> Public.
 
-   ```
-   https://raw.githubusercontent.com/<USER>/<REPO>/main/Tools.bat
-   ```
+**Option A - web upload (no git needed):**
+1. Open https://github.com/aneesmug/DiagnosticTools
+2. "Add file" -> "Upload files" -> drag in `Tools.bat` -> "Commit changes".
+3. Re-upload the same way whenever you update it.
 
-   (Replace `<USER>` and `<REPO>`. If your default branch is `master`, use that.)
+**Option B - git (from a folder that has ONLY Tools.bat, NOT your web files):**
+```powershell
+mkdir $env:USERPROFILE\DiagnosticTools; cd $env:USERPROFILE\DiagnosticTools
+git init
+copy "D:\xampp\htdocs\almutlak\TroubleshooteTools\Tools.bat" .
+git add Tools.bat
+git commit -m "IT Tools"
+git branch -M main
+git remote add origin https://github.com/aneesmug/DiagnosticTools.git
+git push -u origin main
+```
+> Do NOT push `config.php` / `index.php` - keep those on your server only.
+
+Your raw URL (default branch `main`):
+```
+https://raw.githubusercontent.com/aneesmug/DiagnosticTools/main/Tools.bat
+```
 
 ---
 
 ## 3. The command techs run
 
 ```powershell
-$u='https://raw.githubusercontent.com/<USER>/<REPO>/main/Tools.bat'; $f="$env:TEMP\ITTools.bat"; irm $u -OutFile $f; Start-Process $f -Verb RunAs
+$u='https://raw.githubusercontent.com/aneesmug/DiagnosticTools/main/Tools.bat'; $f="$env:TEMP\ITTools.bat"; irm $u -OutFile $f; Start-Process $f -Verb RunAs
 ```
 
 - Downloads the file to disk and runs it elevated (one UAC prompt).
@@ -69,7 +84,7 @@ don't type it.
   few minutes, so allow ~5 min, or use the jsDelivr CDN which you can purge:
 
   ```
-  https://cdn.jsdelivr.net/gh/<USER>/<REPO>@main/Tools.bat
+  https://cdn.jsdelivr.net/gh/aneesmug/DiagnosticTools@main/Tools.bat
   ```
 
 ## Notes
