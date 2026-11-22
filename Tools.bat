@@ -62,7 +62,7 @@ if /i not "%~dp0"=="%ITROOT%\bin\" (
 ::    powershell -NoProfile -Command "[BitConverter]::ToString([Security.Cryptography.SHA256]::Create().ComputeHash([Text.Encoding]::UTF8.GetBytes('YOUR-PASSWORD'))).Replace('-','')"
 ::  Asked once per run; tools opened from the window inherit the sign-in.
 :: ------------------------------------------------------------
-set "PWHASH=82E69BB310D971004BFA6871C85246CB50AD6E6B738C44F93C09F98C125647A7"
+set "PWHASH=6EE32AD748778F2485E75BADAD714CC0346F15FABACCB915C3726416CED7E58E"
 if not defined PWHASH goto AUTHOK
 if defined ITTOOLS_AUTH goto AUTHOK
 set "ITPWH=%PWHASH%"
